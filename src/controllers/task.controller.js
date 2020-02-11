@@ -43,10 +43,14 @@ const updateTask = async (req, res) => {
   }
 
   try {
-    const task = Task.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // returns new updated task
-      runValidators: true // runs validaion for task updating
-    });
+    const task = await Task.findById(req.params.id);
+    Object.assign(task, req.body);
+    task.save();
+
+    // const task = Task.findByIdAndUpdate(req.params.id, req.body, {
+    //   new: true, // returns new updated task
+    //   runValidators: true // runs validaion for task updating
+    // });
 
     if (!task) {
       return res.status(404).send();

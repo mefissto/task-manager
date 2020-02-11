@@ -43,10 +43,14 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // returns new updated user
-      runValidators: true // runs validaion for user updating
-    });
+    const user = await User.findById(req.params.id);
+    Object.assign(user, req.body);
+    user.save();
+
+    // const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    //   new: true, // returns new updated user
+    //   runValidators: true // runs validaion for user updating
+    // });
 
     if (!user) {
       return res.status(404).send();
