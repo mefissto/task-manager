@@ -4,5 +4,6 @@ const { connectionString } = require('../config');
 mongoose.connect(connectionString, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false
 });
