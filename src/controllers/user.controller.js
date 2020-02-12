@@ -24,17 +24,6 @@ const fetchUserById = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
-  const user = new User(req.body);
-
-  try {
-    await user.save();
-    res.status(201).send(user);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-};
-
 const updateUser = async (req, res) => {
   const isValidOperation = paramsValidator(req.body, User);
 
@@ -79,7 +68,6 @@ const removeUser = async (req, res) => {
 module.exports = {
   fetchUsers,
   fetchUserById,
-  createUser,
   updateUser,
   removeUser
 };
