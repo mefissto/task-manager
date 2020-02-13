@@ -16,11 +16,11 @@ const authMiddleware = async (req, res, next) => {
 
     req.token = token;
     req.user = user;
+    next();
   } catch (error) {
     res.status(400).send(error);
   }
 
-  next();
 };
 
 module.exports = authMiddleware;

@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const Task = require('./task.model');
 const { tokenSignature } = require('./../config');
 
 const userSchema = new mongoose.Schema({
@@ -53,6 +54,21 @@ const userSchema = new mongoose.Schema({
   ]
 });
 
+// virtual property for relationship between two etities
+userSchema.virtual('tasks', {
+  ref: 'Task',
+  localField: '_id',
+  foreignField: 'owner'
+})
+
+// if we called method as "toJSON" express calls it implicit every time behind the scene when he sends a response
+// so we just can hide properties that don't have to be displayed to an user
+userSchema.methods.toJSON = function() {
+  const { tokens, password, __v, ...user } = this.toObject();
+
+  return user
+}
+
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, tokenSignature);
@@ -90,6 +106,13 @@ userSchema.pre('save', async function(next) {
 
   next();
 });
+
+// Delete user tasks when user is removed
+userSchema.pre('remove', async function(next) {
+  const user = this;
+  Task.deleteMany({ owner: user._id });
+  next();
+})
 
 const User = mongoose.model('User', userSchema);
 

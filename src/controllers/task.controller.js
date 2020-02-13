@@ -3,8 +3,12 @@ const paramsValidator = require('./../helpers/helper-validator');
 
 const fetchTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
-    res.send(tasks);
+    await req.user.populate('tasks').execPopulate() // get related to user tasks
+    res.send(req.user.tasks);
+
+    // or
+    // const tasks = await Task.find({ owner: req.user._id });
+    // res.send(tasks);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -14,7 +18,8 @@ const fetchTaskById = async (req, res) => {
   const _id = req.params.id;
 
   try {
-    const task = Task.findById(_id);
+    const task = await Task.findOne({ _id, owner: req.user._id})
+
     if (!task) {
       return res.status(404).send();
     }
@@ -25,7 +30,7 @@ const fetchTaskById = async (req, res) => {
 };
 
 const createTask = async (req, res) => {
-  const task = new Task(req.body);
+  const task = new Task({ ...req.body, owner: req.user._id });
 
   try {
     await task.save();
@@ -43,9 +48,7 @@ const updateTask = async (req, res) => {
   }
 
   try {
-    const task = await Task.findById(req.params.id);
-    Object.assign(task, req.body);
-    task.save();
+    const task = await Task.findById({ _id: req.params.id, owner: req.user._id });
 
     // const task = Task.findByIdAndUpdate(req.params.id, req.body, {
     //   new: true, // returns new updated task
@@ -56,6 +59,9 @@ const updateTask = async (req, res) => {
       return res.status(404).send();
     }
 
+    Object.assign(task, req.body);
+    task.save();
+    
     res.send(task);
   } catch (err) {
     res.status(400).send();
@@ -64,7 +70,7 @@ const updateTask = async (req, res) => {
 
 const removeTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndDelete({ _id: req.params.id, owner: req.user._id});
 
     if (!task) {
       return res.status(404).send();

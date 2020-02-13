@@ -50,6 +50,10 @@ const removeUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
 
+    /**
+     * if we have user variable we can use  user.remove()  indtead of finding
+     */
+
     if (!user) {
       return res.status(404).send();
     }
