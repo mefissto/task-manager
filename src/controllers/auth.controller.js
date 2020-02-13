@@ -24,7 +24,42 @@ const registration = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    req.user.tokens = req.user.tokens.filter(
+      token => token.token !== req.token
+    );
+
+    await req.user.save();
+
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const logoutAll = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(404).send();
+    }
+
+    req.user.tokens = [];
+    await req.user.save();
+
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   login,
-  registration
+  registration,
+  logout,
+  logoutAll
 };

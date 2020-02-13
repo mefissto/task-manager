@@ -14,6 +14,7 @@ const authMiddleware = async (req, res, next) => {
       throw new Error({ error: 'Authentefication error' });
     }
 
+    req.token = token;
     req.user = user;
   } catch (error) {
     res.status(400).send(error);
