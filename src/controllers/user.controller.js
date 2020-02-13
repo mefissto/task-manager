@@ -1,13 +1,8 @@
 const User = require('../models/user.model');
 const paramsValidator = require('./../helpers/helper-validator');
 
-const fetchUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.send(users);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+const fetchMyProfile = async (req, res) => {
+  res.send(req.user);
 };
 
 const fetchUserById = async (req, res) => {
@@ -66,7 +61,7 @@ const removeUser = async (req, res) => {
 };
 
 module.exports = {
-  fetchUsers,
+  fetchMyProfile,
   fetchUserById,
   updateUser,
   removeUser
