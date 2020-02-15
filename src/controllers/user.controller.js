@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const paramsValidator = require('./../helpers/helper-validator');
+const sharp = require('sharp');
 
 const fetchMyProfile = async (req, res) => {
   res.send(req.user);
@@ -64,9 +65,57 @@ const removeUser = async (req, res) => {
   }
 };
 
+const uploadAvatar = async (req, res) => {
+  // req.user.avatar = req.file.buffer;
+
+  const buffer = await sharp(req.file.buffer)
+    .resize({
+      // sets a custom size if need
+      width: 250,
+      height: 250
+    })
+    .png() // converts to png
+    .toBuffer();
+
+  req.user.avatar = avatar;
+  await req.user.save();
+  res.send();
+};
+
+const removeAvatar = async (req, res) => {
+  try {
+    await req.user.update({
+      $unset: { avatar: undefined }
+    });
+
+    res.send(req.user);
+  } catch (error) {
+    return res.status(400).send();
+  }
+};
+
+const fetchAvatarByUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    console.log('user: ', user);
+
+    if (!user || !user.avatar) {
+      throw new Error('User not found or does not have any avatar');
+    }
+
+    res.set('Content-Type', 'image/png');
+    res.send(user.avatar);
+  } catch (error) {
+    res.status(404).send();
+  }
+};
+
 module.exports = {
   fetchMyProfile,
   fetchUserById,
   updateUser,
-  removeUser
+  removeUser,
+  uploadAvatar,
+  removeAvatar,
+  fetchAvatarByUser
 };

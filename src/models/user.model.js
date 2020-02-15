@@ -52,7 +52,10 @@ const userSchema = new mongoose.Schema(
           required: true
         }
       }
-    ]
+    ],
+    avatar: {
+      type: Buffer
+    }
   },
   {
     timestamps: true // adds two new fields to the model 'createdAt' and 'updatedAt'
@@ -69,7 +72,7 @@ userSchema.virtual('tasks', {
 // if we called method as "toJSON" express calls it implicit every time behind the scene when he sends a response
 // so we just can hide properties that don't have to be displayed to an user
 userSchema.methods.toJSON = function() {
-  const { tokens, password, __v, ...user } = this.toObject();
+  const { tokens, password, avatar, __v, ...user } = this.toObject();
 
   return user;
 };
