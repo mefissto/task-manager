@@ -6,68 +6,73 @@ const jwt = require('jsonwebtoken');
 const Task = require('./task.model');
 const { tokenSignature } = require('./../config');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    require: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error('Email is invalid');
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error('Email is invalid');
+        }
       }
-    }
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 6,
-    validate(value) {
-      if (value.toLowerCase().includes('password')) {
-        throw new Error('Password cannot contain "password"');
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 6,
+      validate(value) {
+        if (value.toLowerCase().includes('password')) {
+          throw new Error('Password cannot contain "password"');
+        }
       }
-    }
-  },
-  age: {
-    type: Number,
-    default: 0,
-    validate(value) {
-      if (value < 0) {
-        throw new Error('Age must be a positive number');
+    },
+    age: {
+      type: Number,
+      default: 0,
+      validate(value) {
+        if (value < 0) {
+          throw new Error('Age must be a positive number');
+        }
       }
-    }
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true
+        }
       }
-    }
-  ]
-});
+    ]
+  },
+  {
+    timestamps: true // adds two new fields to the model 'createdAt' and 'updatedAt'
+  }
+);
 
 // virtual property for relationship between two etities
 userSchema.virtual('tasks', {
   ref: 'Task',
   localField: '_id',
   foreignField: 'owner'
-})
+});
 
 // if we called method as "toJSON" express calls it implicit every time behind the scene when he sends a response
 // so we just can hide properties that don't have to be displayed to an user
 userSchema.methods.toJSON = function() {
   const { tokens, password, __v, ...user } = this.toObject();
 
-  return user
-}
+  return user;
+};
 
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
@@ -112,7 +117,7 @@ userSchema.pre('remove', async function(next) {
   const user = this;
   Task.deleteMany({ owner: user._id });
   next();
-})
+});
 
 const User = mongoose.model('User', userSchema);
 

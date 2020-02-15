@@ -2,8 +2,30 @@ const Task = require('../models/task.model');
 const paramsValidator = require('./../helpers/helper-validator');
 
 const fetchTasks = async (req, res) => {
+  const match = {};
+  const sort = {};
+
+  if (req.query.completed) {
+    match.completed = req.query.completed === 'true'; // cause query is always a string
+  }
+
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(':');
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+  }
+
   try {
-    await req.user.populate('tasks').execPopulate() // get related to user tasks
+    await req.user
+      .populate({
+        path: 'tasks',
+        match,
+        options: {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip),
+          sort
+        }
+      })
+      .execPopulate(); // get related to user tasks
     res.send(req.user.tasks);
 
     // or
@@ -18,7 +40,7 @@ const fetchTaskById = async (req, res) => {
   const _id = req.params.id;
 
   try {
-    const task = await Task.findOne({ _id, owner: req.user._id})
+    const task = await Task.findOne({ _id, owner: req.user._id });
 
     if (!task) {
       return res.status(404).send();
@@ -48,7 +70,10 @@ const updateTask = async (req, res) => {
   }
 
   try {
-    const task = await Task.findById({ _id: req.params.id, owner: req.user._id });
+    const task = await Task.findById({
+      _id: req.params.id,
+      owner: req.user._id
+    });
 
     // const task = Task.findByIdAndUpdate(req.params.id, req.body, {
     //   new: true, // returns new updated task
@@ -61,7 +86,7 @@ const updateTask = async (req, res) => {
 
     Object.assign(task, req.body);
     task.save();
-    
+
     res.send(task);
   } catch (err) {
     res.status(400).send();
@@ -70,7 +95,10 @@ const updateTask = async (req, res) => {
 
 const removeTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete({ _id: req.params.id, owner: req.user._id});
+    const task = await Task.findByIdAndDelete({
+      _id: req.params.id,
+      owner: req.user._id
+    });
 
     if (!task) {
       return res.status(404).send();
