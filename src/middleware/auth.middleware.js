@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('./../models/user.model');
-const { tokenSignature } = require('./../config');
+const tokenSignature = process.env.TOKEN_SIGNATURE;
 
 const authMiddleware = async (req, res, next) => {
   try {

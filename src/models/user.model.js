@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const Task = require('./task.model');
-const { tokenSignature } = require('./../config');
+const tokenSignature = process.env.TOKEN_SIGNATURE;
 
 const userSchema = new mongoose.Schema(
   {

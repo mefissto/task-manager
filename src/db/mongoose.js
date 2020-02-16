@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { connectionString } = require('../config');
 
-mongoose.connect(connectionString, {
+mongoose.connect(process.env.DB_CONNECTION_STRING, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,

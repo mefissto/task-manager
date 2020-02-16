@@ -10,7 +10,7 @@ const authRouter = require('./routes/auth.router');
 const { errorHandler, errorInterceptor } = require('./helpers/error.handler');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // middlewares
 app.use(morgan('dev'));
