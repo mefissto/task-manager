@@ -1,6 +1,6 @@
 # Task-manager
 
-Simple web serwer for tasks management
+Simple web server for tasks management
 
 ## Installation
 
