@@ -1,8 +1,6 @@
-## Task-manager
+# Task-manager
 
-
-
-TODO: Write a project description
+Simple web serwer for tasks management
 
 ## Installation
 
@@ -34,10 +32,6 @@ TODO: Write usage instructions
 ## History
 
 TODO: Write history
-
-## Credits
-
-TODO: Write credits
 
 ## License
 
