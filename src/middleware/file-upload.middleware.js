@@ -15,7 +15,17 @@ const upload = multer({
     // cb(undefined, true); // everythig is ok
     // cb(undefined, false); // silently rejects the upload
   }
+  // storage: storage // sets the storage settings
 });
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'images')
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
 
 const uploadMiddleware = formDataKey => {
   // single's method parameter needs to be matched with a form-data key name that user uploads

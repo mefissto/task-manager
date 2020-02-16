@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const { sendWelcomeEmail } = require('./../emails/account');
 
 const login = async (req, res) => {
   try {
@@ -16,6 +17,7 @@ const registration = async (req, res) => {
 
   try {
     await user.save();
+    sendWelcomeEmail(user.email, user.name);
     const token = await user.generateAuthToken();
     res.send({ user, token });
     res.status(201).send(user);

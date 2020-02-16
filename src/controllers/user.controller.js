@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const paramsValidator = require('./../helpers/helper-validator');
 const sharp = require('sharp');
+const { sendCancelationEmail } = require('./../emails/account');
 
 const fetchMyProfile = async (req, res) => {
   res.send(req.user);
@@ -58,7 +59,7 @@ const removeUser = async (req, res) => {
     if (!user) {
       return res.status(404).send();
     }
-
+    sendCancelationEmail(user.email, user.name);
     res.send(user);
   } catch (err) {
     res.status(400).send(err);
