@@ -69,7 +69,7 @@ const removeUser = async (req, res) => {
 const uploadAvatar = async (req, res) => {
   // req.user.avatar = req.file.buffer;
 
-  const buffer = await sharp(req.file.buffer)
+  const avatar = await sharp(req.file.buffer)
     .resize({
       // sets a custom size if need
       width: 250,
